@@ -8,13 +8,28 @@
  */
 package org.openhab.designer.ui.internal.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.eclipse.ui.internal.dialogs.WorkbenchWizardElement;
+import org.eclipse.ui.internal.wizards.AbstractExtensionWizardRegistry;
+import org.eclipse.ui.wizards.IWizardCategory;
+import org.eclipse.ui.wizards.IWizardDescriptor;
 
+@SuppressWarnings("restriction")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
+
+	private static final String FILTERED_EXTENSION_CATEGORY = "org.eclipse.jdt.ui.java";
+	private static final List<String> FILTERED_EXTENSION_NAMES = Arrays
+			.asList(new String[] { "org.eclipse.ui.wizards.new.project", "org.eclipse.ui.wizards.new.folder",
+					"org.eclipse.ui.editors.wizards.UntitledTextFileWizard" });
 
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
@@ -23,6 +38,37 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	public ActionBarAdvisor createActionBarAdvisor(
 			IActionBarConfigurer configurer) {
 		return new ApplicationActionBarAdvisor(configurer);
+	}
+
+	/**
+	 * Solution to hide default "New.." wizards from:
+	 * http://stackoverflow.com/questions/11307367/how-to-remove-default-wizards-from-file-new-menu-in-rcp-application
+	 */
+	public void postWindowOpen() {
+		AbstractExtensionWizardRegistry wizardRegistry = (AbstractExtensionWizardRegistry) PlatformUI.getWorkbench()
+				.getNewWizardRegistry();
+		IWizardCategory[] categories = PlatformUI.getWorkbench().getNewWizardRegistry().getRootCategory()
+				.getCategories();
+		for (IWizardDescriptor wizard : getAllWizards(categories)) {
+			if (shouldBeHidden(wizard)) {
+				WorkbenchWizardElement wizardElement = (WorkbenchWizardElement) wizard;
+				wizardRegistry.removeExtension(wizardElement.getConfigurationElement().getDeclaringExtension(),
+						new Object[] { wizardElement });
+			}
+		}
+	}
+
+	private boolean shouldBeHidden(IWizardDescriptor wizard) {
+		return wizard.getCategory().getId().matches(FILTERED_EXTENSION_CATEGORY) || FILTERED_EXTENSION_NAMES.contains(wizard.getId());
+	}
+
+	private IWizardDescriptor[] getAllWizards(IWizardCategory[] categories) {
+		List<IWizardDescriptor> results = new ArrayList<IWizardDescriptor>();
+		for (IWizardCategory wizardCategory : categories) {
+			results.addAll(Arrays.asList(wizardCategory.getWizards()));
+			results.addAll(Arrays.asList(getAllWizards(wizardCategory.getCategories())));
+		}
+		return results.toArray(new IWizardDescriptor[0]);
 	}
 
 	public void preWindowOpen() {

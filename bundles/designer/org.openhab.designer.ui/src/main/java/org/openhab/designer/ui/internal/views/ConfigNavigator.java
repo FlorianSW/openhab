@@ -17,6 +17,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.actions.NewWizardAction;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.openhab.designer.core.config.ConfigurationFolderProvider;
 import org.openhab.designer.ui.internal.actions.SelectConfigFolderAction;
@@ -25,15 +26,19 @@ public class ConfigNavigator extends CommonNavigator {
 
 	private IResourceChangeListener changeListener;
 
+	private NewWizardAction newWizardAction;
+
 	@Override
 	public void createPartControl(Composite aParent) {
 		super.createPartControl(aParent);
-		Action action = new SelectConfigFolderAction(getCommonViewer());
+		Action selectConfigFolderAction = new SelectConfigFolderAction(getCommonViewer());
 		IActionBars actionBars = getViewSite().getActionBars();
 		IMenuManager dropDownMenu = actionBars.getMenuManager();
 		IToolBarManager toolBar = actionBars.getToolBarManager();
-		dropDownMenu.add(action);
-		toolBar.add(action);
+		dropDownMenu.add(selectConfigFolderAction);
+		toolBar.add(selectConfigFolderAction);
+		newWizardAction = new NewWizardAction(getSite().getWorkbenchWindow());
+		toolBar.add(newWizardAction);
 	}
 
 	@Override
@@ -51,8 +56,7 @@ public class ConfigNavigator extends CommonNavigator {
 				.addResourceChangeListener(changeListener);
 
 		try {
-			return ConfigurationFolderProvider.getRootConfigurationFolder()
-					.getProject();
+			return ConfigurationFolderProvider.getRootConfigurationFolder().getProject();
 		} catch (Exception e) {
 			return null;
 		}
