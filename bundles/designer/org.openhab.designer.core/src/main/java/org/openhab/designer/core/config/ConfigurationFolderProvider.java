@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigurationFolderProvider {
 	
+	private static final String PROJECT_NAME = "OpenHAB-configurations";
+	private static final String PROJECT_CONFIG = "configurations";
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationFolderProvider.class);
 	
 	private static IFolder folder;
@@ -40,15 +42,9 @@ public class ConfigurationFolderProvider {
 	
 	static public synchronized IFolder getRootConfigurationFolder() throws CoreException {
 		if(folder==null) {
-			IProject defaultProject = ResourcesPlugin.getWorkspace().getRoot().getProject("config");
-			if(!defaultProject.exists()) {
-				initialize(defaultProject);
-			}
 			File configFolder = getFolderFromPreferences();
 			if(configFolder!=null) {
-				folder = defaultProject.getFolder("config");
-				folder.createLink(configFolder.toURI(), IResource.BACKGROUND_REFRESH|IResource.REPLACE, null);
-				ConfigDispatcher.setConfigFolder(configFolder.getAbsolutePath());
+				setRootConfigurationFolder(configFolder);
 			}
 		}
 		return folder;
@@ -58,12 +54,12 @@ public class ConfigurationFolderProvider {
 		ConfigDispatcher.setConfigFolder(configFolder.getAbsolutePath());
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				IProject defaultProject = ResourcesPlugin.getWorkspace().getRoot().getProject("config");
+				IProject defaultProject = ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
 				if(!defaultProject.exists()) {
 					initialize(defaultProject);
 				}
 				if(configFolder!=null) {
-					folder = defaultProject.getFolder("config");
+					folder = defaultProject.getFolder(PROJECT_CONFIG);
 					if(folder.exists()) {
 						folder.delete(true, null);
 					}
