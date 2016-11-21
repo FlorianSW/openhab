@@ -9,6 +9,7 @@
 package org.openhab.designer.core.config;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -33,7 +34,9 @@ public class ConfigurationFolderProvider {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationFolderProvider.class);
 	
-	private static IFolder folder; 
+	private static IFolder folder;
+
+	private static ConfigurationFolderWatcher watcher;
 	
 	static public synchronized IFolder getRootConfigurationFolder() throws CoreException {
 		if(folder==null) {
@@ -65,11 +68,23 @@ public class ConfigurationFolderProvider {
 						folder.delete(true, null);
 					}
 					folder.createLink(configFolder.toURI(), IResource.ALLOW_MISSING_LOCAL, null);
+					try {
+						registerWatchService(configFolder);
+					} catch (IOException e) {
+						logger.info("Unable to register watch service for config folder " + configFolder.toString(), e);
+					}
 				}
 			}
 		};
 		ResourcesPlugin.getWorkspace().run(runnable, null);
 	}	
+	
+	private static void registerWatchService(final File folder) throws IOException {
+		if (watcher == null) {
+			watcher = new ConfigurationFolderWatcher();
+		}
+		watcher.watchNew(folder.toPath());
+	}
 	
 	private static void initialize(IProject project) {
 		try {			
