@@ -8,6 +8,8 @@
  */
 package org.openhab.designer.ui.internal.application;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,10 +28,8 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
 @SuppressWarnings("restriction")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
-	private static final String FILTERED_EXTENSION_CATEGORY = "org.eclipse.jdt.ui.java";
-	private static final List<String> FILTERED_EXTENSION_NAMES = Arrays
-			.asList(new String[] { "org.eclipse.ui.wizards.new.project", "org.eclipse.ui.wizards.new.folder",
-					"org.eclipse.ui.editors.wizards.UntitledTextFileWizard" });
+	private static final List<String> DESIRED_WIZARD_EXTENSION_NAMES = asList(
+			new String[] { "org.eclipse.ui.wizards.new.file" });
 
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
@@ -59,7 +59,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	private boolean shouldBeHidden(IWizardDescriptor wizard) {
-		return wizard.getCategory().getId().matches(FILTERED_EXTENSION_CATEGORY) || FILTERED_EXTENSION_NAMES.contains(wizard.getId());
+		return !DESIRED_WIZARD_EXTENSION_NAMES.contains(wizard.getId());
 	}
 
 	private IWizardDescriptor[] getAllWizards(IWizardCategory[] categories) {
