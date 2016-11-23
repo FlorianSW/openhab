@@ -7,8 +7,10 @@ bundles/io/org.openhab.io.multimedia.tts.marytts/lib/
 .metadata/
 .DS_Store
 */plugin.xml_gen
+**.settings**
 
 distribution/openhabhome/logs/*.log
+distribution/openhabhome/logs/*.zip
 distribution/openhabhome/*.zip
 distribution/openhabhome/etc/rrd4j/*.rrd
 *.xml_gen
