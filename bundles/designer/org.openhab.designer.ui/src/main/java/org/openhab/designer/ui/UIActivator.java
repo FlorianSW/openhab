@@ -10,6 +10,7 @@ package org.openhab.designer.ui;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -26,6 +27,7 @@ public class UIActivator extends AbstractUIPlugin {
 	private static UIActivator plugin;
 
 	public static ServiceTracker<ItemRegistry, ItemRegistry> itemRegistryTracker;
+	public static ServiceTracker<ItemFactory, ItemFactory> itemFactoryTracker;
 
 	/**
 	 * The constructor
@@ -41,6 +43,8 @@ public class UIActivator extends AbstractUIPlugin {
 		super.start(context);
 		itemRegistryTracker = new ServiceTracker<ItemRegistry, ItemRegistry>(context, ItemRegistry.class, null);
 		itemRegistryTracker.open();
+		itemFactoryTracker = new ServiceTracker<ItemFactory, ItemFactory>(context, ItemFactory.class, null);
+		itemFactoryTracker.open();
 		plugin = this;
 	}
 
@@ -52,6 +56,8 @@ public class UIActivator extends AbstractUIPlugin {
 		plugin = null;
 		itemRegistryTracker.close();
 		itemRegistryTracker = null;
+		itemFactoryTracker.close();
+		itemFactoryTracker = null;
 		super.stop(context);
 	}
 

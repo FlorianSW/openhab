@@ -20,4 +20,5 @@ Import-Package: org.apache.commons.lang,
  org.openhab.core.library.items,
  org.openhab.core.library.types,
  org.slf4j
-Export-Package: org.openhab.designer.ui
+Export-Package: org.openhab.designer.ui,
+ org.openhab.designer.ui.wizards.newitem

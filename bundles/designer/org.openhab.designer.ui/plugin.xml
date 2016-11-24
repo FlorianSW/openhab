@@ -191,5 +191,15 @@
          </enablement>
       </actionProvider>
    </extension>
+   <extension
+      point="org.eclipse.ui.newWizards">
+      <wizard
+         name="Item"
+         class="org.openhab.designer.ui.wizards.newitem.NewItemWizard"
+         id="org.openhab.designer.ui.wizards.newitem.NewItemWizard"
+         icon="icons/items.png"
+         category="org.eclipse.ui.Basic">
+      </wizard>
+   </extension>
 
 </plugin>

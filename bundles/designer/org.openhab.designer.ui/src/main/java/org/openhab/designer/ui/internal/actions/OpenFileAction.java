@@ -14,12 +14,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 import org.openhab.designer.ui.UIActivator;
+import org.openhab.designer.ui.internal.FileUtil;
 
 public class OpenFileAction extends Action {
 
@@ -38,51 +34,7 @@ public class OpenFileAction extends Action {
 		ISelection selection = viewer.getSelection();
 		Object obj = ((IStructuredSelection)selection).getFirstElement();
 		if(obj instanceof IFile) {
-			openFile((IFile) obj);
-		}
-    }
-
-    /**
-     * Opens an editor on the given file resource.
-     *
-     * @param file the file resource
-     */
-    void openFile(IFile file) {
-    	IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-    	
-    	FileEditorInput editorInput = null;
-    	
-//		IEditorReference[] editors = activePage.getEditorReferences();
-//		for (IEditorReference editorReference : editors) {
-//			IEditorInput input;
-//			try {
-//				input = editorReference.getEditorInput();
-//			if (input instanceof FileEditorInput) {
-//				FileEditorInput fileEditorInput = (FileEditorInput) input;
-//				if(fileEditorInput.getStorage().getFullPath().equals(file.getFullPath())) {
-//					editorInput = fileEditorInput;
-//				}
-//			}
-//			} catch (PartInitException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (CoreException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		
-    	if(editorInput==null) {
-    		editorInput = new FileEditorInput(file);
-    	}
-    	
-   	 	IEditorDescriptor editor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
-     	String editorId = editor==null ? "org.eclipse.ui.DefaultTextEditor" : editor.getId();
-    	try {
-			activePage.openEditor(editorInput, editorId);
-		} catch (PartInitException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			FileUtil.openFile((IFile) obj);
 		}
     }
 

@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigurationFolderProvider {
 	
-	private static final String PROJECT_NAME = "OpenHAB-configurations";
-	private static final String PROJECT_CONFIG = "configurations";
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationFolderProvider.class);
 	
 	private static IFolder folder;
@@ -54,12 +52,13 @@ public class ConfigurationFolderProvider {
 		ConfigDispatcher.setConfigFolder(configFolder.getAbsolutePath());
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				IProject defaultProject = ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
+				IProject defaultProject = ResourcesPlugin.getWorkspace().getRoot()
+						.getProject(DesignerCoreConstants.CONFIGURATION_PROJECT_NAME);
 				if(!defaultProject.exists()) {
 					initialize(defaultProject);
 				}
 				if(configFolder!=null) {
-					folder = defaultProject.getFolder(PROJECT_CONFIG);
+					folder = defaultProject.getFolder(DesignerCoreConstants.CONFIGURATION_FOLDER_NAME);
 					if(folder.exists()) {
 						folder.delete(true, null);
 					}

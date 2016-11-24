@@ -29,7 +29,8 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	private static final List<String> DESIRED_WIZARD_EXTENSION_NAMES = asList(
-			new String[] { "org.eclipse.ui.wizards.new.file" });
+			new String[] { "org.eclipse.ui.wizards.new.file",
+					"org.openhab.designer.ui.wizards.newitem.NewItemWizard" });
 
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
