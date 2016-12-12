@@ -29,6 +29,7 @@ import org.eclipse.xtext.xbase.XVariableDeclaration;
 import org.eclipse.xtext.xbase.XbaseFactory;
 import org.eclipse.xtext.xbase.scoping.LocalVariableScopeContext;
 import org.eclipse.xtext.xbase.scoping.featurecalls.LocalVarDescription;
+import org.openhab.core.items.Item;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.model.rule.internal.engine.RuleContextHelper;
@@ -55,6 +56,8 @@ public class RulesScopeProvider extends ScriptScopeProvider {
 	@Inject
 	private TypeReferences typeReferences;
 	
+	private Resource varResource;
+
 	@Override
 	protected IScope createLocalVarScope(IScope parentScope,
 			LocalVariableScopeContext scopeContext) {
@@ -89,15 +92,12 @@ public class RulesScopeProvider extends ScriptScopeProvider {
 
 	private Collection<? extends IEObjectDescription> createTriggerSpecificVars(Rule rule) {
 		List<IEObjectDescription> descriptions = new ArrayList<IEObjectDescription>();
-		Resource varResource = new XtextResource(URI.createURI("event://specific.vars"));
 		if(containsCommandTrigger(rule)) {
 			JvmTypeReference commandTypeRef = typeReferences.getTypeForName(Command.class, rule);
-			XVariableDeclaration varDecl = XbaseFactory.eINSTANCE.createXVariableDeclaration();
-			varDecl.setName(RuleContextHelper.VAR_RECEIVED_COMMAND);
-			varDecl.setType(commandTypeRef);
-			varDecl.setWriteable(false);
-			varResource.getContents().add(varDecl);
-			descriptions.add(new LocalVarDescription(QualifiedName.create(varDecl.getName()), varDecl));
+			descriptions.add(getLocalVarDescriptionFromClass(commandTypeRef, RuleContextHelper.VAR_RECEIVED_COMMAND));
+
+			JvmTypeReference itemTypeRef = typeReferences.getTypeForName(Item.class, rule);
+			descriptions.add(getLocalVarDescriptionFromClass(itemTypeRef, RuleContextHelper.VAR_RECEIVED_COMMAND_ITEM));
 		}
 		if(containsStateChangeTrigger(rule)) {
 			JvmTypeReference stateTypeRef = typeReferences.getTypeForName(State.class, rule);
@@ -105,10 +105,26 @@ public class RulesScopeProvider extends ScriptScopeProvider {
 			varDecl.setName(RuleContextHelper.VAR_PREVIOUS_STATE);
 			varDecl.setType(stateTypeRef);
 			varDecl.setWriteable(false);
-			varResource.getContents().add(varDecl);
+			getVariableResource().getContents().add(varDecl);
 			descriptions.add(new LocalVarDescription(QualifiedName.create(varDecl.getName()), varDecl));
 		}
 		return descriptions;
+	}
+
+	private Resource getVariableResource() {
+		if (varResource == null)
+			varResource = new XtextResource(URI.createURI("event://specific.vars"));
+
+		return varResource;
+	}
+
+	private LocalVarDescription getLocalVarDescriptionFromClass(JvmTypeReference typeReference, String referenceName) {
+		XVariableDeclaration varDecl = XbaseFactory.eINSTANCE.createXVariableDeclaration();
+		varDecl.setName(RuleContextHelper.VAR_RECEIVED_COMMAND_ITEM);
+		varDecl.setType(typeReference);
+		varDecl.setWriteable(false);
+		getVariableResource().getContents().add(varDecl);
+		return new LocalVarDescription(QualifiedName.create(varDecl.getName()), varDecl);
 	}
 
 	private boolean containsCommandTrigger(Rule rule) {
