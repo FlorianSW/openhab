@@ -97,7 +97,7 @@ public class RulesScopeProvider extends ScriptScopeProvider {
 			descriptions.add(getLocalVarDescriptionFromClass(commandTypeRef, RuleContextHelper.VAR_RECEIVED_COMMAND));
 
 			JvmTypeReference itemTypeRef = typeReferences.getTypeForName(Item.class, rule);
-			descriptions.add(getLocalVarDescriptionFromClass(itemTypeRef, RuleContextHelper.VAR_RECEIVED_COMMAND_ITEM));
+			descriptions.add(getLocalVarDescriptionFromClass(itemTypeRef, RuleContextHelper.VAR_TRIGGERING_ITEM));
 		}
 		if(containsStateChangeTrigger(rule)) {
 			JvmTypeReference stateTypeRef = typeReferences.getTypeForName(State.class, rule);
@@ -120,7 +120,7 @@ public class RulesScopeProvider extends ScriptScopeProvider {
 
 	private LocalVarDescription getLocalVarDescriptionFromClass(JvmTypeReference typeReference, String referenceName) {
 		XVariableDeclaration varDecl = XbaseFactory.eINSTANCE.createXVariableDeclaration();
-		varDecl.setName(RuleContextHelper.VAR_RECEIVED_COMMAND_ITEM);
+		varDecl.setName(RuleContextHelper.VAR_TRIGGERING_ITEM);
 		varDecl.setType(typeReference);
 		varDecl.setWriteable(false);
 		getVariableResource().getContents().add(varDecl);

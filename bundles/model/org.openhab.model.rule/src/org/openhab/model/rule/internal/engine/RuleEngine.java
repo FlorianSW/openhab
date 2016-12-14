@@ -195,7 +195,7 @@ public class RuleEngine implements EventHandler, ItemRegistryChangeListener, Sta
 				for (Rule rule : rules) {
 					context = new RuleEvaluationContext();
 					context.newValue(QualifiedName.create(RuleContextHelper.VAR_RECEIVED_COMMAND), command);
-					context.newValue(QualifiedName.create(RuleContextHelper.VAR_RECEIVED_COMMAND_ITEM), item);
+					context.newValue(QualifiedName.create(RuleContextHelper.VAR_TRIGGERING_ITEM), item);
 					executeRule(rule, context);
 				}
 			} catch (ItemNotFoundException e) {

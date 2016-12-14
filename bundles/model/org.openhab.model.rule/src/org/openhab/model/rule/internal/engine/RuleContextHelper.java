@@ -46,7 +46,7 @@ public class RuleContextHelper {
 	 * Variable name for the item, which received a command in a "command
 	 * triggered" rule
 	 */
-	public static final String VAR_RECEIVED_COMMAND_ITEM = "receivedCommandItem";
+	public static final String VAR_TRIGGERING_ITEM = "triggeringItem";
 	
 	private static Provider<IEvaluationContext> contextProvider = RulesStandaloneSetup.getInjector().getProvider(IEvaluationContext.class);
 	private static ScriptEngine scriptEngine = RuleModelActivator.scriptEngineTracker.getService();
